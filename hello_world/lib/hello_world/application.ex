@@ -1,4 +1,4 @@
-defmodule Graphql.Application do
+defmodule HelloWorld.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -9,18 +9,18 @@ defmodule Graphql.Application do
   def start(_type, _args) do
     children = [
       # Start the Telemetry supervisor
-      GraphqlWeb.Telemetry,
+      HelloWorldWeb.Telemetry,
       # Start the PubSub system
-      {Phoenix.PubSub, name: Graphql.PubSub},
+      {Phoenix.PubSub, name: HelloWorld.PubSub},
       # Start the Endpoint (http/https)
-      GraphqlWeb.Endpoint
-      # Start a worker by calling: Graphql.Worker.start_link(arg)
-      # {Graphql.Worker, arg}
+      HelloWorldWeb.Endpoint
+      # Start a worker by calling: HelloWorld.Worker.start_link(arg)
+      # {HelloWorld.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: Graphql.Supervisor]
+    opts = [strategy: :one_for_one, name: HelloWorld.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
@@ -28,7 +28,7 @@ defmodule Graphql.Application do
   # whenever the application is updated.
   @impl true
   def config_change(changed, _new, removed) do
-    GraphqlWeb.Endpoint.config_change(changed, removed)
+    HelloWorldWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 end

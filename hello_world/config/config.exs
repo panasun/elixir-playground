@@ -8,14 +8,14 @@
 import Config
 
 # Configures the endpoint
-config :graphql, GraphqlWeb.Endpoint,
+config :hello_world, HelloWorldWeb.Endpoint,
   url: [host: "localhost"],
   render_errors: [
-    formats: [json: GraphqlWeb.ErrorJSON],
+    formats: [json: HelloWorldWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: Graphql.PubSub,
-  live_view: [signing_salt: "UXDvrl8y"]
+  pubsub_server: HelloWorld.PubSub,
+  live_view: [signing_salt: "jrAm+B66"]
 
 # Configures Elixir's Logger
 config :logger, :console,

@@ -2,9 +2,9 @@ import Config
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
-config :graphql, GraphqlWeb.Endpoint,
+config :hello_world, HelloWorldWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "kjD65wRN+J2XnV9ezfL792qHuYmR6e2M6qtTumu05VBskarRgWaYDIEAzpMMjXQa",
+  secret_key_base: "s7IuMMbDzRbOHenJ4id75zQ32ALKyIsPAGnd8Bwel3jMbql6/fu13sVhW714hSUt",
   server: false
 
 # Print only warnings and errors during test

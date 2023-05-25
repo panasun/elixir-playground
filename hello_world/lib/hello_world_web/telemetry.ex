@@ -1,4 +1,4 @@
-defmodule GraphqlWeb.Telemetry do
+defmodule HelloWorldWeb.Telemetry do
   use Supervisor
   import Telemetry.Metrics
 
@@ -63,7 +63,7 @@ defmodule GraphqlWeb.Telemetry do
     [
       # A module, function and arguments to be invoked periodically.
       # This function must call :telemetry.execute/3 and a metric must be added above.
-      # {GraphqlWeb, :count_users, []}
+      # {HelloWorldWeb, :count_users, []}
     ]
   end
 end

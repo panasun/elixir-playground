@@ -1,9 +1,9 @@
-defmodule Graphql.MixProject do
+defmodule HelloWorld.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :graphql,
+      app: :hello_world,
       version: "0.1.0",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -18,7 +18,7 @@ defmodule Graphql.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {Graphql.Application, []},
+      mod: {HelloWorld.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end

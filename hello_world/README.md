@@ -1,4 +1,4 @@
-# Graphql
+# HelloWorld
 
 To start your Phoenix server:
 

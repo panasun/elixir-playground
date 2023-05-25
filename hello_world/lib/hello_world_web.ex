@@ -1,12 +1,12 @@
-defmodule GraphqlWeb do
+defmodule HelloWorldWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, components, channels, and so on.
 
   This can be used in your application as:
 
-      use GraphqlWeb, :controller
-      use GraphqlWeb, :html
+      use HelloWorldWeb, :controller
+      use HelloWorldWeb, :html
 
   The definitions below will be executed for every controller,
   component, etc, so keep them short and clean, focused
@@ -39,10 +39,10 @@ defmodule GraphqlWeb do
     quote do
       use Phoenix.Controller,
         formats: [:html, :json],
-        layouts: [html: GraphqlWeb.Layouts]
+        layouts: [html: HelloWorldWeb.Layouts]
 
       import Plug.Conn
-      import GraphqlWeb.Gettext
+      import HelloWorldWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -51,9 +51,9 @@ defmodule GraphqlWeb do
   def verified_routes do
     quote do
       use Phoenix.VerifiedRoutes,
-        endpoint: GraphqlWeb.Endpoint,
-        router: GraphqlWeb.Router,
-        statics: GraphqlWeb.static_paths()
+        endpoint: HelloWorldWeb.Endpoint,
+        router: HelloWorldWeb.Router,
+        statics: HelloWorldWeb.static_paths()
     end
   end
 
