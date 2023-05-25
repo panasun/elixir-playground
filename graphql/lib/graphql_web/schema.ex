@@ -1,10 +1,18 @@
 defmodule GraphqlWeb.Schema do
   use Absinthe.Schema
 
+  alias Graphql.{Menu, Repo}
+
   query do
     field :menu_item, :menu_item do
       resolve(fn _, _, _ ->
-        {:ok[id: 1, name: "Bin", description: "Hello"]}
+        {:ok, %{id: 1, name: "Bin", description: "Hello"}}
+      end)
+    end
+
+    field :menu_items, list_of(:menu_item) do
+      resolve(fn _, _, _ ->
+        {:ok, Repo.all(Menu.Item)}
       end)
     end
   end
