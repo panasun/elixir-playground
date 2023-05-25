@@ -7,7 +7,7 @@ defmodule GraphqlWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_graphql_key",
-    signing_salt: "H+fsiviD",
+    signing_salt: "UvLnx/gE",
     same_site: "Lax"
   ]
 
@@ -27,7 +27,6 @@ defmodule GraphqlWeb.Endpoint do
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
     plug Phoenix.CodeReloader
-    plug Phoenix.Ecto.CheckRepoStatus, otp_app: :graphql
   end
 
   plug Plug.RequestId

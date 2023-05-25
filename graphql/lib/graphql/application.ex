@@ -10,12 +10,8 @@ defmodule Graphql.Application do
     children = [
       # Start the Telemetry supervisor
       GraphqlWeb.Telemetry,
-      # Start the Ecto repository
-      Graphql.Repo,
       # Start the PubSub system
       {Phoenix.PubSub, name: Graphql.PubSub},
-      # Start Finch
-      {Finch, name: Graphql.Finch},
       # Start the Endpoint (http/https)
       GraphqlWeb.Endpoint
       # Start a worker by calling: Graphql.Worker.start_link(arg)

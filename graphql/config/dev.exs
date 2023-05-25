@@ -1,15 +1,5 @@
 import Config
 
-# Configure your database
-config :graphql, Graphql.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "graphql_dev",
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
-
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
@@ -23,7 +13,7 @@ config :graphql, GraphqlWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "pmmhwLNqw3dovGKj39Bg31YDDgWNLtV5r0Z7a26rNyQbKazQ1gQwY5vu7nRFzpUx",
+  secret_key_base: "IKzzUcxscn1KeS5C5tfIyApdzPO+YfPzq8m452n4UewTJJKy91m0IyCkl7py6zDW",
   watchers: []
 
 # ## SSL Support
@@ -61,6 +51,3 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
-
-# Disable swoosh api client as it is only required for production adapters.
-config :swoosh, :api_client, false
