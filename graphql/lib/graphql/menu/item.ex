@@ -1,4 +1,4 @@
-defmodule(Graphql.Menu.Item) do
+defmodule Graphql.Menu.Item do
   use Ecto.Schema
   import Ecto.Changeset
   alias Graphql.Menu.Item
@@ -9,9 +9,9 @@ defmodule(Graphql.Menu.Item) do
     field :name, :string
     field :price, :decimal
 
-    belongs_to :category, Graphql.Menu.Category
+    # belongs_to :category, Graphql.Menu.Category
 
-    many_to_many :tags, Graphql.Menu.ItemTag, join_through: "items_taggings"
+    # many_to_many :tags, Graphql.Menu.ItemTag, join_through: "items_taggings"
     timestamps()
   end
 
@@ -20,6 +20,7 @@ defmodule(Graphql.Menu.Item) do
     item
     |> cast(attrs, [:name, :description, :price, :added_on])
     |> validate_required([:name, :price])
-    |> foreign_key_constraint(:category)
+
+    # |> foreign_key_constraint(:category)
   end
 end
