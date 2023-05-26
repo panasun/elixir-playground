@@ -8,6 +8,7 @@ defmodule GraphqlWeb.Schema.Query.MenuItemsTest do
       }
     }
   """
+
   test "query: menu_item", %{conn: conn} do
     conn = get conn, "/", query: @query
 
@@ -23,6 +24,7 @@ defmodule GraphqlWeb.Schema.Query.MenuItemsTest do
       }
     }
   """
+
   test "query: menu_items", %{conn: conn} do
     conn = get conn, "/", query: @query
     IO.inspect(json_response(conn, 200))
