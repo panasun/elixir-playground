@@ -12,6 +12,7 @@ defmodule GraphqlWeb.Schema do
 
     field :menu_items, list_of(:menu_item) do
       resolve(fn _, _, _ ->
+        IO.inspect(Menu.Item)
         {:ok, Repo.all(Menu.Item)}
       end)
     end

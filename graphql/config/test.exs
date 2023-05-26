@@ -9,7 +9,8 @@ config :graphql, Graphql.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "graphql_test#{System.get_env("MIX_TEST_PARTITION")}",
+  # database: "graphql_test#{System.get_env("MIX_TEST_PARTITION")}",
+  database: "postgres",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
 
