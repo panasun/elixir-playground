@@ -2,6 +2,7 @@ defmodule GraphqlWeb.Schema do
   use Absinthe.Schema
 
   alias Graphql.{Menu, Repo}
+  import Ecto.Query
 
   query do
     field :menu_item, :menu_item do
@@ -10,10 +11,24 @@ defmodule GraphqlWeb.Schema do
       end)
     end
 
+    # field :menu_items, list_of(:menu_item) do
+    #   arg :matching, :string
+    #   resolve(fn _, _, _ ->
+    #     IO.inspect(Menu.Item)
+    #     {:ok, Repo.all(Menu.Item)}
+    #   end)
+    # end
+
     field :menu_items, list_of(:menu_item) do
-      resolve(fn _, _, _ ->
-        IO.inspect(Menu.Item)
-        {:ok, Repo.all(Menu.Item)}
+      arg(:name, :string)
+
+      resolve(fn
+        _, %{name: name}, _ when is_binary(name) ->
+          query = from m in Menu.Item, where: like(m.name, ^"%#{name}%")
+          {:ok, Repo.all(query)}
+
+        _, _, _ ->
+          {:ok, Repo.all(Menu.Item)}
       end)
     end
   end
