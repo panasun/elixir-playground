@@ -70,6 +70,10 @@ defmodule Todolist do
     :mnesia.dirty_all_keys(:Person)
   end
 
+  def get_persons_detail do
+    :mnesia.dirty_match_object({:Person, :_, :_, :_})
+  end
+
   def get_person_count do
     :mnesia.table_info(:Person, :size)
   end
