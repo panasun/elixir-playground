@@ -60,6 +60,10 @@ defmodule Todolist do
     :mnesia.dirty_all_keys(:Person)
   end
 
+  def get_person_count do
+    :mnesia.table_info(:Person, :size)
+  end
+
   def add_persons(id, name, job) do
     :mnesia.dirty_write({:Person, id, name, job})
   end
