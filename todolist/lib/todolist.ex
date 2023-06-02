@@ -44,13 +44,20 @@ defmodule Todolist do
     :mnesia_rocksdb.register()
 
     :mnesia_schema.add_backend_type(:rocksdb_copies, :mnesia_rocksdb)
+
     :mnesia.create_table(:Person,
       # in mix.exs :included_applications [:mnesia], disc_copies will be
       # work with iex --name n1@nodebin.com -S mix
       # disc_copies: [node()],
+      type: :set,
       rocksdb_copies: [node()],
-      attributes: [:id, :name, :job]
+      attributes: [:id, :name, :job],
+      user_properties: [
+        rocksdb_opts: [{:max_open_files, 1024}]
+      ]
     )
+
+    :mnesia.wait_for_tables([:Person], 1000)
   end
 
   def seed do
