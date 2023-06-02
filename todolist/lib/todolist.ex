@@ -41,12 +41,14 @@ defmodule Todolist do
   def init do
     :mnesia.create_schema([node()])
     :mnesia.start()
-    mnesia_rocksdb:register()
+    :mnesia_rocksdb.register()
 
+    :mnesia_schema.add_backend_type(:rocksdb_copies, :mnesia_rocksdb)
     :mnesia.create_table(:Person,
       # in mix.exs :included_applications [:mnesia], disc_copies will be
       # work with iex --name n1@nodebin.com -S mix
-      disc_copies: [node()],
+      # disc_copies: [node()],
+      rocksdb_copies: [node()],
       attributes: [:id, :name, :job]
     )
   end
