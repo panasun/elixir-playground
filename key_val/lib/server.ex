@@ -27,6 +27,8 @@ defmodule KeyVal.Server do
 
   def handle_cast({:put, key, value}, {name, store}) do
     new_state = KeyVal.Store.put(store, key, value)
+    IO.inspect(new_state)
+    IO.inspect(:erlang.term_to_binary(new_state))
     KeyVal.DB.save(name, new_state)
     {:noreply, {name, new_state}}
   end

@@ -5,4 +5,13 @@ defmodule KeyValTest do
   test "greets the world" do
     assert KeyVal.hello() == :world
   end
+
+  test "KeyVal" do
+    KeyVal.Manager.start()
+    KeyVal.DB.start()
+    pid1 = KeyVal.Manager.create_store("store1")
+    KeyVal.Server.put(pid1, "key", "value")
+
+    IO.inspect(KeyVal.Server.get(pid1, "key"))
+  end
 end
