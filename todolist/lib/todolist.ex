@@ -63,6 +63,7 @@ defmodule Todolist do
   def seed do
     :mnesia.dirty_write({:Person, 1, "Bin", "Programmer"})
     :mnesia.dirty_write({:Person, 2, "Jam", "Sale"})
+    :mnesia.dirty_write({:Person, 2, "Looknut", "Dentist"})
   end
 
   def get_persons do
