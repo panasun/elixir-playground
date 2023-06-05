@@ -1,21 +1,25 @@
 defmodule KeyVal.DB_Worker do
   use GenServer
 
-  def start(db_path) do
+  def start_link({db_path, worker_id}) do
     IO.puts("Starting DB Worker")
-    GenServer.start(__MODULE__, db_path)
+    GenServer.start_link(__MODULE__, db_path, name: via_tuple(worker_id))
+  end
+
+  def via_tuple(worker_id) do
+    KeyVal.Registry.via_tuple({__MODULE__, worker_id})
   end
 
   def init(db_path) do
     {:ok, db_path}
   end
 
-  def save(pid, store_name, data) do
-    GenServer.cast(pid, {:save, store_name, data})
+  def save(worker_id, store_name, data) do
+    GenServer.cast(via_tuple(worker_id), {:save, store_name, data})
   end
 
-  def fetch(pid, store_name) do
-    GenServer.call(pid, {:fetch, store_name})
+  def fetch(worker_id, store_name) do
+    GenServer.call(via_tuple(worker_id), {:fetch, store_name})
   end
 
   def handle_call({:fetch, store_name}, _, db_path) do

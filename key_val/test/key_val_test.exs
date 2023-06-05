@@ -1,14 +1,13 @@
 defmodule KeyValTest do
   use ExUnit.Case
-  doctest KeyVal
+  # doctest KeyVal
 
-  test "greets the world" do
-    assert KeyVal.hello() == :world
-  end
+  # test "greets the world" do
+  #   assert KeyVal.hello() == :world
+  # end
 
   test "KeyVal" do
-    KeyVal.Manager.start()
-    KeyVal.DB.start()
+    KeyVal.System.start()
     pid1 = KeyVal.Manager.create_store("store1")
     KeyVal.Server.put(pid1, "key", "value")
 

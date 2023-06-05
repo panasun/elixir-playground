@@ -1,24 +1,29 @@
 defmodule KeyVal.Server do
   use GenServer
 
-  def start(store_name) do
-    GenServer.start(__MODULE__, store_name)
+  def start_link(store_name) do
+    IO.puts("Starting Server")
+    GenServer.start_link(__MODULE__, store_name, name: via_tuple(store_name))
+  end
+
+  def via_tuple(worker_id) do
+    KeyVal.Registry.via_tuple({__MODULE__, worker_id})
   end
 
   def init(store_name) do
     {:ok, {store_name, KeyVal.DB.fetch(store_name) || KeyVal.Store.new()}}
   end
 
-  def put(pid, key, value) do
-    GenServer.cast(pid, {:put, key, value})
+  def put(store_name, key, value) do
+    GenServer.cast(via_tuple(store_name), {:put, key, value})
   end
 
-  def get(pid, key) do
-    GenServer.call(pid, {:get, key})
+  def get(store_name, key) do
+    GenServer.call(via_tuple(store_name), {:get, key})
   end
 
-  def del(pid, key) do
-    GenServer.cast(pid, {:del, key})
+  def del(store_name, key) do
+    GenServer.cast(via_tuple(store_name), {:del, key})
   end
 
   def handle_call({:get, key}, _, {name, store}) do
