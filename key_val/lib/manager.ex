@@ -1,8 +1,9 @@
 defmodule KeyVal.Manager do
   use GenServer
 
-  def start do
-    GenServer.start(__MODULE__, nil, name: __MODULE__)
+  def start_link(_) do
+    IO.puts("Starting Manager")
+    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
   def init(_) do

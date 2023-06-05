@@ -24,3 +24,4 @@ key_val-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+*-emacs-elixir-format.ex
