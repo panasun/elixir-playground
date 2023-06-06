@@ -24,7 +24,7 @@ defmodule KeyVal.DB do
   end
 
   def get_worker do
-    random_key = :rand.uniform(5)
+    :rand.uniform(5)
   end
 
   def save(store_name, data) do
