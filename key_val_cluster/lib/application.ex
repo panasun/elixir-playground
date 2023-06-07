@@ -22,6 +22,18 @@ defmodule KeyValCluster.Application do
             members: :auto
           ]
         },
+        {
+          Horde.DynamicSupervisor,
+          [
+            name: KeyValCluster.DBSupervisor,
+            strategy: :one_for_one,
+            distribution_strategy: Horde.UniformQuorumDistribution,
+            max_restarts: 100_00,
+            max_seconds: 1,
+            shutdown: 50_000,
+            members: :auto
+          ]
+        },
         %{
           id: KeyValCluster.ClusterConnector,
           restart: :transient,
@@ -30,10 +42,10 @@ defmodule KeyValCluster.Application do
              [
                fn ->
                  Horde.DynamicSupervisor.wait_for_quorum(KeyValCluster.KeyValSupervisor, 30_000)
+                 Horde.DynamicSupervisor.wait_for_quorum(KeyValCluster.DBSupervisor, 30_000)
                end
              ]}
-        },
-        KeyValCluster.DB
+        }
       ]
       |> maybe_start_cluster_supervisor(Mix.env())
 
