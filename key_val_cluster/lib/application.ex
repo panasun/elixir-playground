@@ -16,7 +16,7 @@ defmodule KeyValCluster.Application do
             name: KeyValCluster.KeyValSupervisor,
             strategy: :one_for_one,
             distribution_strategy: Horde.UniformQuorumDistribution,
-            max_restarts: 100_00,
+            max_restarts: 100_000,
             max_seconds: 1,
             shutdown: 50_000,
             members: :auto
@@ -28,7 +28,7 @@ defmodule KeyValCluster.Application do
             name: KeyValCluster.DBSupervisor,
             strategy: :one_for_one,
             distribution_strategy: Horde.UniformQuorumDistribution,
-            max_restarts: 100_00,
+            max_restarts: 5,
             max_seconds: 1,
             shutdown: 50_000,
             members: :auto
@@ -41,8 +41,10 @@ defmodule KeyValCluster.Application do
             {Task, :start_link,
              [
                fn ->
-                 Horde.DynamicSupervisor.wait_for_quorum(KeyValCluster.KeyValSupervisor, 30_000)
                  Horde.DynamicSupervisor.wait_for_quorum(KeyValCluster.DBSupervisor, 30_000)
+                 Horde.DynamicSupervisor.wait_for_quorum(KeyValCluster.KeyValSupervisor, 30_000)
+
+                 KeyValCluster.DB.create()
                end
              ]}
         }
