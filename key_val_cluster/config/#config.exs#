@@ -1,0 +1,894 @@
+use Mix.Config
+
+config :logger, handle_sasl_reports: true, level: :debug
+
+config :libcluster, :topologies,
+  cluster: [
+    strategy: Cluster.Strategy.Epmd,
+    config: [
+      hosts: [:"node1@127.0.0.1", :"node2@127.0.0.1", :"node3@127.0.0.1"]
+    ]
+  ]
+ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground/key_val_cluster/config (main●●) 
+$ clear
+clear
+ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground/key_val_cluster/config (main●●) 
+$ cd ..
+cd ..
+ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground/key_val_cluster (main●●) 
+$ cd ..
+cd ..
+ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground (main●●) 
+$ git status
+git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+  (commit or discard the untracked or modified content in submodules)
+	modified:   ex_cluster (modified content, untracked content)
+	modified:   key_val_cluster/cubdb/account/0.cub
+	modified:   key_val_cluster/lib/account.ex
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	key_val_cluster/config/.#config.exs
+	key_val_cluster/config/config-emacs-elixir-format.exs
+
+no changes added to commit (use "git add" and/or "git commit -a")
+ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground (main●●) 
+$ git add .
+git add .
+ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground (main●) 
+$ git commit -m "fix"
+git commit -m "fix"
+[main 93653fe] fix
+ 4 files changed, 84 insertions(+), 37 deletions(-)
+ create mode 120000 key_val_cluster/config/.#config.exs
+ create mode 100644 key_val_cluster/config/config-emacs-elixir-format.exs
+ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground (main) 
+$ git push
+git push
+Enumerating objects: 18, done.
+Counting objects: 100% (18/18), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (8/8), done.
+Writing objects: 100% (10/10), 1.51 KiB | 516.00 KiB/s, done.
+Total 10 (delta 4), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (4/4), completed with 4 local objects.        
+To github.com:panasun/elixir-playground.git
+   87f62bf..93653fe  main -> main
+ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground (main) 
+$ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground (main) 
+$ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground (main) 
+$ iex --name node3@127.0.0.1 --cookie mycookie -S mix
+iex --name node3@127.0.0.1 --cookie mycookie -S mix
+Erlang/OTP 26 [erts-14.0] [source] [64-bit] [smp:8:8] [ds:8:8:10] [async-threads:1] [jit:ns]
+
+** (Mix) "mix" with no arguments must be executed in a directory with a mix.exs file
+
+Usage: mix [task]
+
+Examples:
+
+    mix             - Invokes the default task (mix run) in a project
+    mix new PATH    - Creates a new Elixir project at the given path
+    mix help        - Lists all available tasks
+    mix help TASK   - Prints documentation for a given task
+
+The --help and --version options can be given instead of a task for usage and versioning information.
+
+ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground (main) 
+$ cd key_val_cluster/
+cd key_val_cluster/
+ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground/key_val_cluster (main●) 
+$ iex --name node3@127.0.0.1 --cookie mycookie -S mix
+iex --name node3@127.0.0.1 --cookie mycookie -S mix
+Erlang/OTP 26 [erts-14.0] [source] [64-bit] [smp:8:8] [ds:8:8:10] [async-threads:1] [jit:ns]
+
+warning: use Mix.Config is deprecated. Use the Config module instead
+  config/config.exs:1
+
+
+13:18:51.979 [info] Child :disk_log_sup of Supervisor :kernel_safe_sup started
+Pid: #PID<0.212.0>
+Start Call: :disk_log_sup.start_link()
+Restart: :permanent
+Shutdown: 1000
+Type: :supervisor
+
+13:18:51.990 [info] Child :disk_log_server of Supervisor :kernel_safe_sup started
+Pid: #PID<0.213.0>
+Start Call: :disk_log_server.start_link()
+Restart: :permanent
+Shutdown: 2000
+Type: :worker
+
+13:18:52.005 [info] Application logger started at :"node3@127.0.0.1"
+
+13:18:52.009 [info] Child :telemetry_handler_table of Supervisor :telemetry_sup started
+Pid: #PID<0.236.0>
+Start Call: :telemetry_handler_table.start_link()
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.010 [info] Application telemetry started at :"node3@127.0.0.1"
+
+13:18:52.010 [info] Application merkle_map started at :"node3@127.0.0.1"
+
+13:18:52.010 [info] Application delta_crdt started at :"node3@127.0.0.1"
+
+13:18:52.015 [info] Application libring started at :"node3@127.0.0.1"
+
+13:18:52.018 [info] Child :telemetry_poller_default of Supervisor :telemetry_poller_sup started
+Pid: #PID<0.248.0>
+Start Call: :telemetry_poller.start_link([name: :telemetry_poller_default, measurements: [:memory, :total_run_queue_lengths, :system_counts]])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.020 [info] Application telemetry_poller started at :"node3@127.0.0.1"
+
+13:18:52.020 [info] Application horde started at :"node3@127.0.0.1"
+
+13:18:52.020 [info] Application jason started at :"node3@127.0.0.1"
+
+13:18:52.020 [info] Application libcluster started at :"node3@127.0.0.1"
+
+13:18:52.021 [info] Application cubdb started at :"node3@127.0.0.1"
+
+13:18:52.031 [info] Child of Supervisor :inet_gethost_native_sup started
+Pid: #PID<0.259.0>
+Start Call: :inet_gethost_native.init([])
+
+13:18:52.031 [info] Child :inet_gethost_native_sup of Supervisor :kernel_safe_sup started
+Pid: #PID<0.258.0>
+Start Call: :inet_gethost_native.start_link()
+Restart: :temporary
+Shutdown: 1000
+Type: :worker
+
+13:18:52.035 [info] [libcluster:cluster] connected to :"node1@127.0.0.1"
+
+13:18:52.036 [warning] [libcluster:cluster] unable to connect to :"node2@127.0.0.1"
+
+13:18:52.036 [info] Child Cluster.Supervisor of Supervisor KeyValCluster.Supervisor started
+Pid: #PID<0.257.0>
+Start Call: Cluster.Supervisor.start_link([[cluster: [strategy: Cluster.Strategy.Epmd, config: [hosts: [:"node1@127.0.0.1", :"node2@127.0.0.1", :"node3@127.0.0.1"]]]]])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:18:52.045 [info] Child KeyValCluster.Registry.Crdt of Supervisor KeyValCluster.Registry.Supervisor started
+Pid: #PID<0.266.0>
+Start Call: DeltaCrdt.start_link(DeltaCrdt.AWLWWMap, [sync_interval: 300, max_sync_size: :infinite, shutdown: 30000, crdt: DeltaCrdt.AWLWWMap, on_diffs: {Horde.RegistryImpl, :on_diffs, [KeyValCluster.Registry]}, name: KeyValCluster.Registry.Crdt])
+Restart: :permanent
+Shutdown: 30000
+Type: :worker
+
+13:18:52.048 [info] Starting Horde.RegistryImpl with name KeyValCluster.Registry
+
+13:18:52.051 [info] Child KeyValCluster.Registry of Supervisor KeyValCluster.Registry.Supervisor started
+Pid: #PID<0.267.0>
+Start Call: Horde.RegistryImpl.start_link([name: KeyValCluster.Registry, listeners: [], meta: nil, keys: :unique, members: :auto])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.052 [info] Child Horde.NodeListener of Supervisor KeyValCluster.Registry.Supervisor started
+Pid: #PID<0.268.0>
+Start Call: Horde.NodeListener.start_link(KeyValCluster.Registry)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.052 [info] Child KeyValCluster.Registry of Supervisor KeyValCluster.Supervisor started
+Pid: #PID<0.265.0>
+Start Call: Horde.Registry.start_link([name: KeyValCluster.Registry, keys: :unique, members: :auto])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:18:52.058 [info] Child KeyValCluster.KeyValSupervisor.Crdt of Supervisor KeyValCluster.KeyValSupervisor.Supervisor started
+Pid: #PID<0.270.0>
+Start Call: DeltaCrdt.start_link(DeltaCrdt.AWLWWMap, [sync_interval: 300, max_sync_size: :infinite, shutdown: 30000, crdt: DeltaCrdt.AWLWWMap, on_diffs: {Horde.DynamicSupervisorImpl, :on_diffs, [KeyValCluster.KeyValSupervisor]}, name: KeyValCluster.KeyValSupervisor.Crdt])
+Restart: :permanent
+Shutdown: 30000
+Type: :worker
+
+13:18:52.058 [info] Starting Horde.DynamicSupervisorImpl with name KeyValCluster.KeyValSupervisor
+
+13:18:52.059 [info] Child Horde.DynamicSupervisorImpl of Supervisor KeyValCluster.KeyValSupervisor.Supervisor started
+Pid: #PID<0.271.0>
+Start Call: Horde.DynamicSupervisorImpl.start_link([name: KeyValCluster.KeyValSupervisor, root_name: KeyValCluster.KeyValSupervisor, init_module: Supervisor.Default, strategy: :one_for_one, intensity: 100000, period: 1, max_children: :infinity, extra_arguments: [], distribution_strategy: Horde.UniformQuorumDistribution, process_redistribution: :passive, members: :auto])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.059 [info] Child KeyValCluster.KeyValSupervisor.ProcessesSupervisor of Supervisor KeyValCluster.KeyValSupervisor.Supervisor started
+Pid: #PID<0.272.0>
+Start Call: Horde.ProcessesSupervisor.start_link([shutdown: :infinity, root_name: KeyValCluster.KeyValSupervisor, type: :supervisor, name: KeyValCluster.KeyValSupervisor.ProcessesSupervisor, strategy: :one_for_one, max_restarts: 100000, max_seconds: 1])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:18:52.059 [info] Child Horde.SignalShutdown of Supervisor KeyValCluster.KeyValSupervisor.Supervisor started
+Pid: #PID<0.273.0>
+Start Call: GenServer.start_link(Horde.SignalShutdown, [KeyValCluster.KeyValSupervisor])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.059 [info] Child KeyValCluster.KeyValSupervisor_telemetry_poller of Supervisor KeyValCluster.KeyValSupervisor.Supervisor started
+Pid: #PID<0.274.0>
+Start Call: :telemetry_poller.start_link([measurements: [{:process_info, [name: KeyValCluster.KeyValSupervisor, event: [:horde, :supervisor], keys: [:message_queue_len]]}, {Horde.DynamicSupervisorTelemetryPoller, :poll, [KeyValCluster.KeyValSupervisor]}], period: 5000, name: KeyValCluster.KeyValSupervisor_telemetry_poller])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.059 [info] Child Horde.NodeListener of Supervisor KeyValCluster.KeyValSupervisor.Supervisor started
+Pid: #PID<0.275.0>
+Start Call: Horde.NodeListener.start_link(KeyValCluster.KeyValSupervisor)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.059 [info] Child KeyValCluster.KeyValSupervisor of Supervisor KeyValCluster.Supervisor started
+Pid: #PID<0.269.0>
+Start Call: Horde.DynamicSupervisor.start_link([name: KeyValCluster.KeyValSupervisor, strategy: :one_for_one, distribution_strategy: Horde.UniformQuorumDistribution, max_restarts: 100000, max_seconds: 1, shutdown: 50000, members: :auto])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:18:52.059 [info] Child KeyValCluster.DBSupervisor.Crdt of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.277.0>
+Start Call: DeltaCrdt.start_link(DeltaCrdt.AWLWWMap, [sync_interval: 300, max_sync_size: :infinite, shutdown: 30000, crdt: DeltaCrdt.AWLWWMap, on_diffs: {Horde.DynamicSupervisorImpl, :on_diffs, [KeyValCluster.DBSupervisor]}, name: KeyValCluster.DBSupervisor.Crdt])
+Restart: :permanent
+Shutdown: 30000
+Type: :worker
+
+13:18:52.059 [info] Starting Horde.DynamicSupervisorImpl with name KeyValCluster.DBSupervisor
+
+13:18:52.059 [info] Child Horde.DynamicSupervisorImpl of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.278.0>
+Start Call: Horde.DynamicSupervisorImpl.start_link([name: KeyValCluster.DBSupervisor, root_name: KeyValCluster.DBSupervisor, init_module: Supervisor.Default, strategy: :one_for_one, intensity: 5, period: 1, max_children: :infinity, extra_arguments: [], distribution_strategy: Horde.UniformQuorumDistribution, process_redistribution: :passive, members: :auto])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.060 [info] Child KeyValCluster.DBSupervisor.ProcessesSupervisor of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.279.0>
+Start Call: Horde.ProcessesSupervisor.start_link([shutdown: :infinity, root_name: KeyValCluster.DBSupervisor, type: :supervisor, name: KeyValCluster.DBSupervisor.ProcessesSupervisor, strategy: :one_for_one, max_restarts: 5, max_seconds: 1])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:18:52.060 [info] Child Horde.SignalShutdown of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.280.0>
+Start Call: GenServer.start_link(Horde.SignalShutdown, [KeyValCluster.DBSupervisor])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.060 [info] Child KeyValCluster.DBSupervisor_telemetry_poller of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.281.0>
+Start Call: :telemetry_poller.start_link([measurements: [{:process_info, [name: KeyValCluster.DBSupervisor, event: [:horde, :supervisor], keys: [:message_queue_len]]}, {Horde.DynamicSupervisorTelemetryPoller, :poll, [KeyValCluster.DBSupervisor]}], period: 5000, name: KeyValCluster.DBSupervisor_telemetry_poller])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.060 [info] Child Horde.NodeListener of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.282.0>
+Start Call: Horde.NodeListener.start_link(KeyValCluster.DBSupervisor)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.060 [info] Child KeyValCluster.DBSupervisor of Supervisor KeyValCluster.Supervisor started
+Pid: #PID<0.276.0>
+Start Call: Horde.DynamicSupervisor.start_link([name: KeyValCluster.DBSupervisor, strategy: :one_for_one, distribution_strategy: Horde.UniformQuorumDistribution, max_restarts: 5, max_seconds: 1, shutdown: 50000, members: :auto])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:18:52.060 [info] Child KeyValCluster.AccountSupervisor.Crdt of Supervisor KeyValCluster.AccountSupervisor.Supervisor started
+Pid: #PID<0.284.0>
+Start Call: DeltaCrdt.start_link(DeltaCrdt.AWLWWMap, [sync_interval: 300, max_sync_size: :infinite, shutdown: 30000, crdt: DeltaCrdt.AWLWWMap, on_diffs: {Horde.DynamicSupervisorImpl, :on_diffs, [KeyValCluster.AccountSupervisor]}, name: KeyValCluster.AccountSupervisor.Crdt])
+Restart: :permanent
+Shutdown: 30000
+Type: :worker
+
+13:18:52.060 [info] Starting Horde.DynamicSupervisorImpl with name KeyValCluster.AccountSupervisor
+
+13:18:52.060 [info] Child Horde.DynamicSupervisorImpl of Supervisor KeyValCluster.AccountSupervisor.Supervisor started
+Pid: #PID<0.285.0>
+Start Call: Horde.DynamicSupervisorImpl.start_link([name: KeyValCluster.AccountSupervisor, root_name: KeyValCluster.AccountSupervisor, init_module: Supervisor.Default, strategy: :one_for_one, intensity: 5, period: 1, max_children: :infinity, extra_arguments: [], distribution_strategy: Horde.UniformQuorumDistribution, process_redistribution: :passive, members: :auto])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.060 [info] Child KeyValCluster.AccountSupervisor.ProcessesSupervisor of Supervisor KeyValCluster.AccountSupervisor.Supervisor started
+Pid: #PID<0.286.0>
+Start Call: Horde.ProcessesSupervisor.start_link([shutdown: :infinity, root_name: KeyValCluster.AccountSupervisor, type: :supervisor, name: KeyValCluster.AccountSupervisor.ProcessesSupervisor, strategy: :one_for_one, max_restarts: 5, max_seconds: 1])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:18:52.060 [info] Child Horde.SignalShutdown of Supervisor KeyValCluster.AccountSupervisor.Supervisor started
+Pid: #PID<0.287.0>
+Start Call: GenServer.start_link(Horde.SignalShutdown, [KeyValCluster.AccountSupervisor])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.060 [info] Child KeyValCluster.AccountSupervisor_telemetry_poller of Supervisor KeyValCluster.AccountSupervisor.Supervisor started
+Pid: #PID<0.288.0>
+Start Call: :telemetry_poller.start_link([measurements: [{:process_info, [name: KeyValCluster.AccountSupervisor, event: [:horde, :supervisor], keys: [:message_queue_len]]}, {Horde.DynamicSupervisorTelemetryPoller, :poll, [KeyValCluster.AccountSupervisor]}], period: 5000, name: KeyValCluster.AccountSupervisor_telemetry_poller])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.060 [info] Child Horde.NodeListener of Supervisor KeyValCluster.AccountSupervisor.Supervisor started
+Pid: #PID<0.289.0>
+Start Call: Horde.NodeListener.start_link(KeyValCluster.AccountSupervisor)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:18:52.060 [info] Child KeyValCluster.AccountSupervisor of Supervisor KeyValCluster.Supervisor started
+Pid: #PID<0.283.0>
+Start Call: Horde.DynamicSupervisor.start_link([name: KeyValCluster.AccountSupervisor, strategy: :one_for_one, distribution_strategy: Horde.UniformQuorumDistribution, max_restarts: 5, max_seconds: 1, shutdown: 50000, members: :auto])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:18:52.060 [info] Child KeyValCluster.ClusterConnector of Supervisor KeyValCluster.Supervisor started
+Pid: #PID<0.290.0>
+Start Call: Task.start_link(#Function<0.78117110/0 in KeyValCluster.Application.start/2>)
+Restart: :transient
+Shutdown: 5000
+Type: :worker
+
+13:18:52.062 [info] Application key_val_cluster started at :"node3@127.0.0.1"
+Interactive Elixir (1.14.5) - press Ctrl+C to exit (type h() ENTER for help)
+iex(node3@127.0.0.1)1> 
+13:19:11.668 [info] Child {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor, "B8"}} of Supervisor #PID<0.302.0> (Supervisor.Default) started
+Pid: #PID<0.303.0>
+Start Call: DynamicSupervisor.start_link([name: {:via, Horde.Registry, {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor, "B8"}}}])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+
+nil
+iex(node3@127.0.0.1)2> KeyValCluster.Account.get("B8")
+KeyValCluster.Account.get("B8")
+44444
+iex(node3@127.0.0.1)3> KeyValCluster.Account.add_auction("B8", 9)
+KeyValCluster.Account.add_auction("B8", 9)
+{:ok, #PID<0.330.0>}
+iex(node3@127.0.0.1)4> KeyValCluster.Account.add_auction("B8", 10)
+KeyValCluster.Account.add_auction("B8", 10)
+{:ok, #PID<0.332.0>}
+iex(node3@127.0.0.1)5> :init.stop
+:init.stop
+:ok
+ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground/key_val_cluster (main●) 
+$ iex --name node3@127.0.0.1 --cookie mycookie -S mix
+iex --name node3@127.0.0.1 --cookie mycookie -S mix
+Erlang/OTP 26 [erts-14.0] [source] [64-bit] [smp:8:8] [ds:8:8:10] [async-threads:1] [jit:ns]
+
+warning: use Mix.Config is deprecated. Use the Config module instead
+  config/config.exs:1
+
+
+13:21:54.089 [info] Child :disk_log_sup of Supervisor :kernel_safe_sup started
+Pid: #PID<0.212.0>
+Start Call: :disk_log_sup.start_link()
+Restart: :permanent
+Shutdown: 1000
+Type: :supervisor
+
+13:21:54.098 [info] Child :disk_log_server of Supervisor :kernel_safe_sup started
+Pid: #PID<0.213.0>
+Start Call: :disk_log_server.start_link()
+Restart: :permanent
+Shutdown: 2000
+Type: :worker
+
+13:21:54.111 [info] Application logger started at :"node3@127.0.0.1"
+
+13:21:54.115 [info] Child :telemetry_handler_table of Supervisor :telemetry_sup started
+Pid: #PID<0.236.0>
+Start Call: :telemetry_handler_table.start_link()
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.115 [info] Application telemetry started at :"node3@127.0.0.1"
+
+13:21:54.115 [info] Application merkle_map started at :"node3@127.0.0.1"
+
+13:21:54.115 [info] Application delta_crdt started at :"node3@127.0.0.1"
+
+13:21:54.120 [info] Application libring started at :"node3@127.0.0.1"
+
+13:21:54.123 [info] Child :telemetry_poller_default of Supervisor :telemetry_poller_sup started
+Pid: #PID<0.248.0>
+Start Call: :telemetry_poller.start_link([name: :telemetry_poller_default, measurements: [:memory, :total_run_queue_lengths, :system_counts]])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.124 [info] Application telemetry_poller started at :"node3@127.0.0.1"
+
+13:21:54.125 [info] Application horde started at :"node3@127.0.0.1"
+
+13:21:54.125 [info] Application jason started at :"node3@127.0.0.1"
+
+13:21:54.125 [info] Application libcluster started at :"node3@127.0.0.1"
+
+13:21:54.125 [info] Application cubdb started at :"node3@127.0.0.1"
+
+13:21:54.134 [info] Child of Supervisor :inet_gethost_native_sup started
+Pid: #PID<0.259.0>
+Start Call: :inet_gethost_native.init([])
+
+13:21:54.134 [info] Child :inet_gethost_native_sup of Supervisor :kernel_safe_sup started
+Pid: #PID<0.258.0>
+Start Call: :inet_gethost_native.start_link()
+Restart: :temporary
+Shutdown: 1000
+Type: :worker
+
+13:21:54.140 [info] [libcluster:cluster] connected to :"node1@127.0.0.1"
+
+13:21:54.143 [info] [libcluster:cluster] connected to :"node2@127.0.0.1"
+
+13:21:54.143 [info] Child Cluster.Supervisor of Supervisor KeyValCluster.Supervisor started
+Pid: #PID<0.257.0>
+Start Call: Cluster.Supervisor.start_link([[cluster: [strategy: Cluster.Strategy.Epmd, config: [hosts: [:"node1@127.0.0.1", :"node2@127.0.0.1", :"node3@127.0.0.1"]]]]])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:21:54.154 [info] Child KeyValCluster.Registry.Crdt of Supervisor KeyValCluster.Registry.Supervisor started
+Pid: #PID<0.269.0>
+Start Call: DeltaCrdt.start_link(DeltaCrdt.AWLWWMap, [sync_interval: 300, max_sync_size: :infinite, shutdown: 30000, crdt: DeltaCrdt.AWLWWMap, on_diffs: {Horde.RegistryImpl, :on_diffs, [KeyValCluster.Registry]}, name: KeyValCluster.Registry.Crdt])
+Restart: :permanent
+Shutdown: 30000
+Type: :worker
+
+13:21:54.156 [info] Starting Horde.RegistryImpl with name KeyValCluster.Registry
+
+13:21:54.160 [info] Child KeyValCluster.Registry of Supervisor KeyValCluster.Registry.Supervisor started
+Pid: #PID<0.270.0>
+Start Call: Horde.RegistryImpl.start_link([name: KeyValCluster.Registry, listeners: [], meta: nil, keys: :unique, members: :auto])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.160 [info] Child Horde.NodeListener of Supervisor KeyValCluster.Registry.Supervisor started
+Pid: #PID<0.271.0>
+Start Call: Horde.NodeListener.start_link(KeyValCluster.Registry)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.161 [info] Child KeyValCluster.Registry of Supervisor KeyValCluster.Supervisor started
+Pid: #PID<0.268.0>
+Start Call: Horde.Registry.start_link([name: KeyValCluster.Registry, keys: :unique, members: :auto])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:21:54.167 [info] Child KeyValCluster.KeyValSupervisor.Crdt of Supervisor KeyValCluster.KeyValSupervisor.Supervisor started
+Pid: #PID<0.273.0>
+Start Call: DeltaCrdt.start_link(DeltaCrdt.AWLWWMap, [sync_interval: 300, max_sync_size: :infinite, shutdown: 30000, crdt: DeltaCrdt.AWLWWMap, on_diffs: {Horde.DynamicSupervisorImpl, :on_diffs, [KeyValCluster.KeyValSupervisor]}, name: KeyValCluster.KeyValSupervisor.Crdt])
+Restart: :permanent
+Shutdown: 30000
+Type: :worker
+
+13:21:54.167 [info] Starting Horde.DynamicSupervisorImpl with name KeyValCluster.KeyValSupervisor
+
+13:21:54.169 [info] Child Horde.DynamicSupervisorImpl of Supervisor KeyValCluster.KeyValSupervisor.Supervisor started
+Pid: #PID<0.274.0>
+Start Call: Horde.DynamicSupervisorImpl.start_link([name: KeyValCluster.KeyValSupervisor, root_name: KeyValCluster.KeyValSupervisor, init_module: Supervisor.Default, strategy: :one_for_one, intensity: 100000, period: 1, max_children: :infinity, extra_arguments: [], distribution_strategy: Horde.UniformQuorumDistribution, process_redistribution: :passive, members: :auto])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.169 [info] Child KeyValCluster.KeyValSupervisor.ProcessesSupervisor of Supervisor KeyValCluster.KeyValSupervisor.Supervisor started
+Pid: #PID<0.275.0>
+Start Call: Horde.ProcessesSupervisor.start_link([shutdown: :infinity, root_name: KeyValCluster.KeyValSupervisor, type: :supervisor, name: KeyValCluster.KeyValSupervisor.ProcessesSupervisor, strategy: :one_for_one, max_restarts: 100000, max_seconds: 1])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:21:54.169 [info] Child Horde.SignalShutdown of Supervisor KeyValCluster.KeyValSupervisor.Supervisor started
+Pid: #PID<0.276.0>
+Start Call: GenServer.start_link(Horde.SignalShutdown, [KeyValCluster.KeyValSupervisor])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.169 [info] Child KeyValCluster.KeyValSupervisor_telemetry_poller of Supervisor KeyValCluster.KeyValSupervisor.Supervisor started
+Pid: #PID<0.277.0>
+Start Call: :telemetry_poller.start_link([measurements: [{:process_info, [name: KeyValCluster.KeyValSupervisor, event: [:horde, :supervisor], keys: [:message_queue_len]]}, {Horde.DynamicSupervisorTelemetryPoller, :poll, [KeyValCluster.KeyValSupervisor]}], period: 5000, name: KeyValCluster.KeyValSupervisor_telemetry_poller])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.169 [info] Child Horde.NodeListener of Supervisor KeyValCluster.KeyValSupervisor.Supervisor started
+Pid: #PID<0.278.0>
+Start Call: Horde.NodeListener.start_link(KeyValCluster.KeyValSupervisor)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.169 [info] Child KeyValCluster.KeyValSupervisor of Supervisor KeyValCluster.Supervisor started
+Pid: #PID<0.272.0>
+Start Call: Horde.DynamicSupervisor.start_link([name: KeyValCluster.KeyValSupervisor, strategy: :one_for_one, distribution_strategy: Horde.UniformQuorumDistribution, max_restarts: 100000, max_seconds: 1, shutdown: 50000, members: :auto])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:21:54.169 [info] Child KeyValCluster.DBSupervisor.Crdt of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.280.0>
+Start Call: DeltaCrdt.start_link(DeltaCrdt.AWLWWMap, [sync_interval: 300, max_sync_size: :infinite, shutdown: 30000, crdt: DeltaCrdt.AWLWWMap, on_diffs: {Horde.DynamicSupervisorImpl, :on_diffs, [KeyValCluster.DBSupervisor]}, name: KeyValCluster.DBSupervisor.Crdt])
+Restart: :permanent
+Shutdown: 30000
+Type: :worker
+
+13:21:54.170 [info] Starting Horde.DynamicSupervisorImpl with name KeyValCluster.DBSupervisor
+
+13:21:54.170 [info] Child Horde.DynamicSupervisorImpl of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.281.0>
+Start Call: Horde.DynamicSupervisorImpl.start_link([name: KeyValCluster.DBSupervisor, root_name: KeyValCluster.DBSupervisor, init_module: Supervisor.Default, strategy: :one_for_one, intensity: 5, period: 1, max_children: :infinity, extra_arguments: [], distribution_strategy: Horde.UniformQuorumDistribution, process_redistribution: :passive, members: :auto])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.170 [info] Child KeyValCluster.DBSupervisor.ProcessesSupervisor of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.282.0>
+Start Call: Horde.ProcessesSupervisor.start_link([shutdown: :infinity, root_name: KeyValCluster.DBSupervisor, type: :supervisor, name: KeyValCluster.DBSupervisor.ProcessesSupervisor, strategy: :one_for_one, max_restarts: 5, max_seconds: 1])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:21:54.170 [info] Child Horde.SignalShutdown of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.283.0>
+Start Call: GenServer.start_link(Horde.SignalShutdown, [KeyValCluster.DBSupervisor])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.170 [info] Child KeyValCluster.DBSupervisor_telemetry_poller of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.284.0>
+Start Call: :telemetry_poller.start_link([measurements: [{:process_info, [name: KeyValCluster.DBSupervisor, event: [:horde, :supervisor], keys: [:message_queue_len]]}, {Horde.DynamicSupervisorTelemetryPoller, :poll, [KeyValCluster.DBSupervisor]}], period: 5000, name: KeyValCluster.DBSupervisor_telemetry_poller])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.170 [info] Child Horde.NodeListener of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.285.0>
+Start Call: Horde.NodeListener.start_link(KeyValCluster.DBSupervisor)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.170 [info] Child KeyValCluster.DBSupervisor of Supervisor KeyValCluster.Supervisor started
+Pid: #PID<0.279.0>
+Start Call: Horde.DynamicSupervisor.start_link([name: KeyValCluster.DBSupervisor, strategy: :one_for_one, distribution_strategy: Horde.UniformQuorumDistribution, max_restarts: 5, max_seconds: 1, shutdown: 50000, members: :auto])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:21:54.170 [info] Child KeyValCluster.AccountSupervisor.Crdt of Supervisor KeyValCluster.AccountSupervisor.Supervisor started
+Pid: #PID<0.287.0>
+Start Call: DeltaCrdt.start_link(DeltaCrdt.AWLWWMap, [sync_interval: 300, max_sync_size: :infinite, shutdown: 30000, crdt: DeltaCrdt.AWLWWMap, on_diffs: {Horde.DynamicSupervisorImpl, :on_diffs, [KeyValCluster.AccountSupervisor]}, name: KeyValCluster.AccountSupervisor.Crdt])
+Restart: :permanent
+Shutdown: 30000
+Type: :worker
+
+13:21:54.170 [info] Starting Horde.DynamicSupervisorImpl with name KeyValCluster.AccountSupervisor
+
+13:21:54.171 [info] Child Horde.DynamicSupervisorImpl of Supervisor KeyValCluster.AccountSupervisor.Supervisor started
+Pid: #PID<0.288.0>
+Start Call: Horde.DynamicSupervisorImpl.start_link([name: KeyValCluster.AccountSupervisor, root_name: KeyValCluster.AccountSupervisor, init_module: Supervisor.Default, strategy: :one_for_one, intensity: 5, period: 1, max_children: :infinity, extra_arguments: [], distribution_strategy: Horde.UniformQuorumDistribution, process_redistribution: :passive, members: :auto])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.171 [info] Child KeyValCluster.AccountSupervisor.ProcessesSupervisor of Supervisor KeyValCluster.AccountSupervisor.Supervisor started
+Pid: #PID<0.289.0>
+Start Call: Horde.ProcessesSupervisor.start_link([shutdown: :infinity, root_name: KeyValCluster.AccountSupervisor, type: :supervisor, name: KeyValCluster.AccountSupervisor.ProcessesSupervisor, strategy: :one_for_one, max_restarts: 5, max_seconds: 1])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:21:54.172 [info] Child Horde.SignalShutdown of Supervisor KeyValCluster.AccountSupervisor.Supervisor started
+Pid: #PID<0.290.0>
+Start Call: GenServer.start_link(Horde.SignalShutdown, [KeyValCluster.AccountSupervisor])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.172 [info] Child KeyValCluster.AccountSupervisor_telemetry_poller of Supervisor KeyValCluster.AccountSupervisor.Supervisor started
+Pid: #PID<0.291.0>
+Start Call: :telemetry_poller.start_link([measurements: [{:process_info, [name: KeyValCluster.AccountSupervisor, event: [:horde, :supervisor], keys: [:message_queue_len]]}, {Horde.DynamicSupervisorTelemetryPoller, :poll, [KeyValCluster.AccountSupervisor]}], period: 5000, name: KeyValCluster.AccountSupervisor_telemetry_poller])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.172 [info] Child Horde.NodeListener of Supervisor KeyValCluster.AccountSupervisor.Supervisor started
+Pid: #PID<0.292.0>
+Start Call: Horde.NodeListener.start_link(KeyValCluster.AccountSupervisor)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.172 [info] Child KeyValCluster.AccountSupervisor of Supervisor KeyValCluster.Supervisor started
+Pid: #PID<0.286.0>
+Start Call: Horde.DynamicSupervisor.start_link([name: KeyValCluster.AccountSupervisor, strategy: :one_for_one, distribution_strategy: Horde.UniformQuorumDistribution, max_restarts: 5, max_seconds: 1, shutdown: 50000, members: :auto])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:21:54.172 [info] Child KeyValCluster.ClusterConnector of Supervisor KeyValCluster.Supervisor started
+Pid: #PID<0.293.0>
+Start Call: Task.start_link(#Function<0.78117110/0 in KeyValCluster.Application.start/2>)
+Restart: :transient
+Shutdown: 5000
+Type: :worker
+
+13:21:54.177 [info] Application key_val_cluster started at :"node3@127.0.0.1"
+Interactive Elixir (1.14.5) - press Ctrl+C to exit (type h() ENTER for help)
+iex(node3@127.0.0.1)1> 
+13:21:54.287 [error] Child 159358993714918216282930504926397496133 of Supervisor KeyValCluster.DBSupervisor.ProcessesSupervisor terminated
+** (exit) {:name_conflict, {:order, nil}, KeyValCluster.Registry, #PID<18676.999.0>}
+Pid: #PID<0.295.0>
+Start Call: KeyValCluster.DB.start_link(:order)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.287 [error] Child 159358993714918216282930504926397496133 of Supervisor KeyValCluster.DBSupervisor.ProcessesSupervisor failed to start
+** (exit) already started: #PID<18676.999.0>
+Start Call: KeyValCluster.DB.start_link(:order)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.288 [error] Child 159358993714918216282930504926397496133 of Supervisor KeyValCluster.DBSupervisor.ProcessesSupervisor failed to start
+** (exit) already started: #PID<18676.999.0>
+Start Call: KeyValCluster.DB.start_link(:order)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.288 [error] Child 159358993714918216282930504926397496133 of Supervisor KeyValCluster.DBSupervisor.ProcessesSupervisor failed to start
+** (exit) already started: #PID<18676.999.0>
+Start Call: KeyValCluster.DB.start_link(:order)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.290 [error] Child 159358993714918216282930504926397496133 of Supervisor KeyValCluster.DBSupervisor.ProcessesSupervisor failed to start
+** (exit) already started: #PID<18676.999.0>
+Start Call: KeyValCluster.DB.start_link(:order)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.290 [error] Child 159358993714918216282930504926397496133 of Supervisor KeyValCluster.DBSupervisor.ProcessesSupervisor failed to start
+** (exit) already started: #PID<18676.999.0>
+Start Call: KeyValCluster.DB.start_link(:order)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.290 [error] Child 159358993714918216282930504926397496133 of Supervisor KeyValCluster.DBSupervisor.ProcessesSupervisor caused shutdown
+** (exit) :reached_max_restart_intensity
+Start Call: KeyValCluster.DB.start_link(:order)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.290 [error] Child KeyValCluster.DBSupervisor.ProcessesSupervisor of Supervisor KeyValCluster.DBSupervisor.Supervisor terminated
+** (exit) shutdown
+Pid: #PID<0.282.0>
+Start Call: Horde.ProcessesSupervisor.start_link([shutdown: :infinity, root_name: KeyValCluster.DBSupervisor, type: :supervisor, name: KeyValCluster.DBSupervisor.ProcessesSupervisor, strategy: :one_for_one, max_restarts: 5, max_seconds: 1])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:21:54.290 [error] Child KeyValCluster.DBSupervisor.ProcessesSupervisor of Supervisor KeyValCluster.DBSupervisor.Supervisor caused shutdown
+** (exit) :reached_max_restart_intensity
+Start Call: Horde.ProcessesSupervisor.start_link([shutdown: :infinity, root_name: KeyValCluster.DBSupervisor, type: :supervisor, name: KeyValCluster.DBSupervisor.ProcessesSupervisor, strategy: :one_for_one, max_restarts: 5, max_seconds: 1])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:21:54.293 [error] Child KeyValCluster.DBSupervisor of Supervisor KeyValCluster.Supervisor terminated
+** (exit) shutdown
+Pid: #PID<0.279.0>
+Start Call: Horde.DynamicSupervisor.start_link([name: KeyValCluster.DBSupervisor, strategy: :one_for_one, distribution_strategy: Horde.UniformQuorumDistribution, max_restarts: 5, max_seconds: 1, shutdown: 50000, members: :auto])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:21:54.294 [info] Child KeyValCluster.DBSupervisor.Crdt of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.302.0>
+Start Call: DeltaCrdt.start_link(DeltaCrdt.AWLWWMap, [sync_interval: 300, max_sync_size: :infinite, shutdown: 30000, crdt: DeltaCrdt.AWLWWMap, on_diffs: {Horde.DynamicSupervisorImpl, :on_diffs, [KeyValCluster.DBSupervisor]}, name: KeyValCluster.DBSupervisor.Crdt])
+Restart: :permanent
+Shutdown: 30000
+Type: :worker
+
+13:21:54.294 [info] Starting Horde.DynamicSupervisorImpl with name KeyValCluster.DBSupervisor
+
+13:21:54.294 [info] Child Horde.DynamicSupervisorImpl of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.303.0>
+Start Call: Horde.DynamicSupervisorImpl.start_link([name: KeyValCluster.DBSupervisor, root_name: KeyValCluster.DBSupervisor, init_module: Supervisor.Default, strategy: :one_for_one, intensity: 5, period: 1, max_children: :infinity, extra_arguments: [], distribution_strategy: Horde.UniformQuorumDistribution, process_redistribution: :passive, members: :auto])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.294 [info] Child KeyValCluster.DBSupervisor.ProcessesSupervisor of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.304.0>
+Start Call: Horde.ProcessesSupervisor.start_link([shutdown: :infinity, root_name: KeyValCluster.DBSupervisor, type: :supervisor, name: KeyValCluster.DBSupervisor.ProcessesSupervisor, strategy: :one_for_one, max_restarts: 5, max_seconds: 1])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:21:54.295 [info] Child Horde.SignalShutdown of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.305.0>
+Start Call: GenServer.start_link(Horde.SignalShutdown, [KeyValCluster.DBSupervisor])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.295 [info] Child KeyValCluster.DBSupervisor_telemetry_poller of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.306.0>
+Start Call: :telemetry_poller.start_link([measurements: [{:process_info, [name: KeyValCluster.DBSupervisor, event: [:horde, :supervisor], keys: [:message_queue_len]]}, {Horde.DynamicSupervisorTelemetryPoller, :poll, [KeyValCluster.DBSupervisor]}], period: 5000, name: KeyValCluster.DBSupervisor_telemetry_poller])
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.295 [info] Child Horde.NodeListener of Supervisor KeyValCluster.DBSupervisor.Supervisor started
+Pid: #PID<0.307.0>
+Start Call: Horde.NodeListener.start_link(KeyValCluster.DBSupervisor)
+Restart: :permanent
+Shutdown: 5000
+Type: :worker
+
+13:21:54.295 [info] Child KeyValCluster.DBSupervisor of Supervisor KeyValCluster.Supervisor started
+Pid: #PID<0.301.0>
+Start Call: Horde.DynamicSupervisor.start_link([name: KeyValCluster.DBSupervisor, strategy: :one_for_one, distribution_strategy: Horde.UniformQuorumDistribution, max_restarts: 5, max_seconds: 1, shutdown: 50000, members: :auto])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:21:54.292 [error] GenServer #PID<0.300.0> terminating
+** (stop) {:name_conflict, {:order, nil}, KeyValCluster.Registry, #PID<18676.999.0>}
+Last message: {:EXIT, #PID<0.296.0>, {:name_conflict, {:order, nil}, KeyValCluster.Registry, #PID<18676.999.0>}}
+State: %DynamicSupervisor{args: {{:temporary, 5000}, []}, extra_arguments: [], mod: Task.Supervisor, name: {#PID<0.300.0>, Task.Supervisor}, strategy: :one_for_one, max_children: :infinity, max_restarts: 3, max_seconds: 5, children: %{}, restarts: []}
+
+13:21:54.307 [error] Process #PID<0.300.0> terminating
+** (exit) {:name_conflict, {:order, nil}, KeyValCluster.Registry, #PID<18676.999.0>}
+    (stdlib 5.0) gen_server.erl:1031: :gen_server.decode_msg/9
+    (stdlib 5.0) proc_lib.erl:241: :proc_lib.init_p_do_apply/3
+Initial Call: Task.Supervisor.init/1
+Ancestors: [#PID<0.296.0>, #PID<0.295.0>, KeyValCluster.DBSupervisor.ProcessesSupervisor, KeyValCluster.DBSupervisor.Supervisor, KeyValCluster.Supervisor, #PID<0.255.0>]
+Message Queue Length: 0
+Messages: []
+Links: []
+Dictionary: [{Task.Supervisor, {:temporary, 5000}}]
+Trapping Exits: true
+Status: :running
+Heap Size: 2586
+Stack Size: 28
+Reductions: 3679
+
+
+nil
+iex(node3@127.0.0.1)2> KeyValCluster.Account.add_auction("B8", 10)
+KeyValCluster.Account.add_auction("B8", 10)
+{:ok, #PID<18677.350.0>}
+iex(node3@127.0.0.1)3> KeyValCluster.Account.add_auction("B8", 8)
+KeyValCluster.Account.add_auction("B8", 8)
+{:error, {:already_started, #PID<18677.342.0>}}
+iex(node3@127.0.0.1)4> 
+13:22:49.208 [info] Child {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor, "B8"}} of Supervisor #PID<0.319.0> (Supervisor.Default) started
+Pid: #PID<0.320.0>
+Start Call: DynamicSupervisor.start_link([name: {:via, Horde.Registry, {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor, "B8"}}}])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:22:49.225 [info] Child {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor, "B2"}} of Supervisor #PID<0.322.0> (Supervisor.Default) started
+Pid: #PID<0.323.0>
+Start Call: DynamicSupervisor.start_link([name: {:via, Horde.Registry, {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor, "B2"}}}])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:22:49.232 [info] Child {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor, "B4"}} of Supervisor #PID<0.325.0> (Supervisor.Default) started
+Pid: #PID<0.326.0>
+Start Call: DynamicSupervisor.start_link([name: {:via, Horde.Registry, {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor, "B4"}}}])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:22:49.235 [info] Child {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor, "B6"}} of Supervisor #PID<0.328.0> (Supervisor.Default) started
+Pid: #PID<0.329.0>
+Start Call: DynamicSupervisor.start_link([name: {:via, Horde.Registry, {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor, "B6"}}}])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+13:22:49.237 [info] Child {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor, "B7"}} of Supervisor #PID<0.331.0> (Supervisor.Default) started
+Pid: #PID<0.332.0>
+Start Call: DynamicSupervisor.start_link([name: {:via, Horde.Registry, {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor, "B7"}}}])
+Restart: :permanent
+Shutdown: :infinity
+Type: :supervisor
+
+
+nil
+iex(node3@127.0.0.1)5> KeyValCluster.Account.add_auction("B8", 10)
+KeyValCluster.Account.add_auction("B8", 10)
+{:ok, #PID<0.336.0>}
+iex(node3@127.0.0.1)6> KeyValCluster.Account.add_auction("B8", 11)
+KeyValCluster.Account.add_auction("B8", 11)
+{:ok, #PID<0.338.0>}
+iex(node3@127.0.0.1)7> KeyValCluster.Account.add_auction("B8", 12)
+KeyValCluster.Account.add_auction("B8", 12)
+{:ok, #PID<0.340.0>}
+iex(node3@127.0.0.1)8> KeyValCluster.Account.add_auction("B8", 13)
+KeyValCluster.Account.add_auction("B8", 13)
+{:ok, #PID<0.342.0>}
+iex(node3@127.0.0.1)9>   C-c C-c^C
+BREAK: (a)bort (A)bort with dump (c)ontinue (p)roc info (i)nfo
+       (l)oaded (v)ersion (k)ill (D)b-tables (d)istribution
+ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground/key_val_cluster (main●) 
+$ git status
+git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+  (commit or discard the untracked or modified content in submodules)
+	modified:   ../ex_cluster (modified content, untracked content)
+	modified:   cubdb/account/0.cub
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	config/#config.exs#
+
+no changes added to commit (use "git add" and/or "git commit -a")
+ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground/key_val_cluster (main●●) 
+$ git add   C-c C-c
+ 
+panasun at nodebin in ~/Projects/panasun/elixir-playground/key_val_cluster (main●●) 
+$ 
