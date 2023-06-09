@@ -9,50 +9,85 @@ defmodule KeyValCluster.Account do
     {:via, Horde.Registry, {KeyValCluster.Registry, {KeyValCluster.Account, account_id}}}
   end
 
-  # def via_tuple_auction(account_id) do
-  #   {
-  #     :via,
-  #     Horde.Registry,
-  #     {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor, account_id}}
-  #   }
-  # end
+  defp via_tuple2(account_id) do
+    {:via, Horde.Registry, {KeyValCluster.Registry, {KeyValCluster.Account2, account_id}}}
+  end
 
-  defp via_tuple_auction(account_id) do
-    registry_tuple =
+  def via_tuple_auction(account_id) do
+    {
+      :via,
+      Horde.Registry,
       {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor, account_id}}
+    }
+  end
 
-    via_string = "#{inspect(:via)}, #{inspect(Horde.Registry)}, #{inspect(registry_tuple)}"
-    {via_string, KeyValCluster.Account.AuctionSupervisor, "AuctionSupervisor-#{account_id}"}
+  def via_tuple_auction2(account_id) do
+    {
+      :via,
+      Horde.Registry,
+      {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor2, account_id}}
+    }
   end
 
   def init(account_id) do
+    # children = [
+    #   {
+    #     Horde.DynamicSupervisor,
+    #     [
+    #       # name: via_tuple_auction(account_id),
+    #       # name: :account1_auction,
+    #       name: String.to_atom("Auction.SuperVisor" <> account_id),
+    #       # name: KeyValCluster.AccountAuction1.Supervisor,
+    #       strategy: :one_for_one,
+    #       distribution_strategy: Horde.UniformQuorumDistribution,
+    #       max_restarts: 5,
+    #       max_seconds: 1,
+    #       shutdown: 50_000,
+    #       members: :auto
+    #     ]
+    #   }
+    # %{
+    #   id: KeyValCluster.Account.AuctionCluster,
+    #   restart: :transient,
+    #   start:
+    #     {Task, :start_link,
+    #      [
+    #        fn ->
+    #          Horde.DynamicSupervisor.wait_for_quorum(
+    #            String.to_atom("Auction.SuperVisor" <> account_id),
+    #            30_000
+    #          )
+    #        end
+    #      ]}
+    # }
+    # ]
+
+    # opts = [strategy: :one_for_one, name: String.to_atom("Auction.SuperVisor2" <> account_id)]
+    # Supervisor.start_link(children, opts)
+
     # Horde.DynamicSupervisor.start_link(
-    #   name: KeyValCluster.Account.AuctionSupervisor,
-    #   strategy: :one_for_one
+    #   # name: via_tuple_auction(account_id),
+    #   # name: :account1_auction,
+    #   name: String.to_atom("Auction.SuperVisor" <> account_id),
+    #   # name: KeyValCluster.AccountAuction1.Supervisor,
+    #   strategy: :one_for_one,
+    #   distribution_strategy: Horde.UniformQuorumDistribution,
+    #   max_restarts: 5,
+    #   max_seconds: 1,
+    #   shutdown: 50_000,
+    #   members: :auto
     # )
 
-    # KeyValCluster.Account.AccountSupervisor.init(account_id)
-
-    children = [
-      {
-        Horde.DynamicSupervisor,
-        [
-          # name: via_tuple_auction(account_id),
-          # name: :account1_auction,
-          name: String.to_atom("Auction.SuperVisor" <> account_id),
-          # name: KeyValCluster.AccountAuction1.Supervisor,
-          strategy: :one_for_one,
-          distribution_strategy: Horde.UniformQuorumDistribution,
-          max_restarts: 5,
-          max_seconds: 1,
-          shutdown: 50_000,
-          members: :auto
-        ]
-      }
-    ]
-
-    opts = [strategy: :one_for_one, name: String.to_atom("Auction.SuperVisor2" <> account_id)]
-    Supervisor.start_link(children, opts)
+    Supervisor.start_link(
+      [
+        {
+          DynamicSupervisor,
+          name: via_tuple_auction(account_id)
+        }
+      ],
+      strategy: :one_for_one
+      # name: via_tuple_auction2(account_id)
+    )
 
     data = KeyValCluster.DB.fetch(:account, account_id)
     {:ok, data || nil}
@@ -86,8 +121,8 @@ defmodule KeyValCluster.Account do
   end
 
   def add_auction(account_id, auction_id) do
-    Horde.DynamicSupervisor.start_child(
-      String.to_atom("Auction.SuperVisor" <> account_id),
+    DynamicSupervisor.start_child(
+      via_tuple_auction(account_id),
       {KeyValCluster.Account.Auction, auction_id}
     )
 
