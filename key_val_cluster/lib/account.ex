@@ -38,6 +38,8 @@ defmodule KeyValCluster.Account do
   end
 
   def init(account_id) do
+    Process.flag(:trap_exit, true)
+
     Supervisor.start_link(
       [
         {
@@ -66,12 +68,6 @@ defmodule KeyValCluster.Account do
 
     data = KeyValCluster.DB.fetch(:account, account_id)
     {:ok, data || nil}
-  end
-
-  def terminate({:shutdown, :finished}, state) do
-    IO.inspect(state)
-    Horde.Registry.put_meta(MyApp.DistributedRegistry, state.name, nil)
-    {:noreply, state}
   end
 
   def maybe_spawn(account_id) do
@@ -107,15 +103,28 @@ defmodule KeyValCluster.Account do
     GenServer.cast(via_tuple(account_id), {:add_auction, account_id, auction_id})
   end
 
+  def stop(account_id) do
+    [{pid, _}] =
+      Horde.Registry.lookup(KeyValCluster.Registry, {KeyValCluster.Account, account_id})
+
+    DynamicSupervisor.terminate_child(
+      KeyValCluster.AccountSupervisor,
+      pid
+    )
+  end
+
+  @impl true
   def handle_cast({:update, account_id, new_value}, value) do
     KeyValCluster.DB.save(:account, account_id, new_value)
     {:noreply, new_value}
   end
 
+  @impl true
   def handle_call({:get, account_id}, _, value) do
     {:reply, value, value}
   end
 
+  @impl true
   def handle_cast({:add_auction, account_id, auction_id}, value) do
     DynamicSupervisor.start_child(
       via_tuple_auction(account_id),
@@ -124,6 +133,11 @@ defmodule KeyValCluster.Account do
 
     {:noreply, account_id}
   end
+
+  # @impl true
+  # def handle_cast({:stop, reason}, state) do
+  #   {:stop, reason, state}
+  # end
 end
 
 defmodule KeyValCluster.Account.Auction do
