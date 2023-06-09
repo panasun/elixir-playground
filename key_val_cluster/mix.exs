@@ -32,7 +32,8 @@ defmodule KeyValCluster.MixProject do
       {:horde, "~> 0.8.7"},
       {:libcluster, "~> 3.2.0"},
       {:local_cluster, "~> 1.1", only: [:test]},
-      {:cubdb, "~> 2.0.2"}
+      {:cubdb, "~> 2.0.2"},
+      {:uuid, "~> 1.1"}
     ]
   end
 end

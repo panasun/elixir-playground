@@ -29,68 +29,49 @@ defmodule KeyValCluster.Account do
     }
   end
 
+  def via_tuple_auction3(account_id) do
+    {
+      :via,
+      Horde.Registry,
+      {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor3, account_id}}
+    }
+  end
+
   def init(account_id) do
-    # children = [
-    #   {
-    #     Horde.DynamicSupervisor,
-    #     [
-    #       # name: via_tuple_auction(account_id),
-    #       # name: :account1_auction,
-    #       name: String.to_atom("Auction.SuperVisor" <> account_id),
-    #       # name: KeyValCluster.AccountAuction1.Supervisor,
-    #       strategy: :one_for_one,
-    #       distribution_strategy: Horde.UniformQuorumDistribution,
-    #       max_restarts: 5,
-    #       max_seconds: 1,
-    #       shutdown: 50_000,
-    #       members: :auto
-    #     ]
-    #   }
-    # %{
-    #   id: KeyValCluster.Account.AuctionCluster,
-    #   restart: :transient,
-    #   start:
-    #     {Task, :start_link,
-    #      [
-    #        fn ->
-    #          Horde.DynamicSupervisor.wait_for_quorum(
-    #            String.to_atom("Auction.SuperVisor" <> account_id),
-    #            30_000
-    #          )
-    #        end
-    #      ]}
-    # }
-    # ]
-
-    # opts = [strategy: :one_for_one, name: String.to_atom("Auction.SuperVisor2" <> account_id)]
-    # Supervisor.start_link(children, opts)
-
-    # Horde.DynamicSupervisor.start_link(
-    #   # name: via_tuple_auction(account_id),
-    #   # name: :account1_auction,
-    #   name: String.to_atom("Auction.SuperVisor" <> account_id),
-    #   # name: KeyValCluster.AccountAuction1.Supervisor,
-    #   strategy: :one_for_one,
-    #   distribution_strategy: Horde.UniformQuorumDistribution,
-    #   max_restarts: 5,
-    #   max_seconds: 1,
-    #   shutdown: 50_000,
-    #   members: :auto
-    # )
-
     Supervisor.start_link(
       [
         {
           DynamicSupervisor,
           name: via_tuple_auction(account_id)
+        },
+        %{
+          id: via_tuple_auction2(account_id),
+          restart: :transient,
+          start:
+            {Task, :start_link,
+             [
+               fn ->
+                 IO.inspect(account_id)
+                 add_auction(account_id, "#{account_id}_#{UUID.uuid4()}")
+                 add_auction(account_id, "#{account_id}_#{UUID.uuid4()}")
+                 add_auction(account_id, "#{account_id}_#{UUID.uuid4()}")
+                 add_auction(account_id, "#{account_id}_#{UUID.uuid4()}")
+                 add_auction(account_id, "#{account_id}_#{UUID.uuid4()}")
+               end
+             ]}
         }
       ],
-      strategy: :one_for_one
-      # name: via_tuple_auction2(account_id)
+      strategy: :rest_for_one
     )
 
     data = KeyValCluster.DB.fetch(:account, account_id)
     {:ok, data || nil}
+  end
+
+  def terminate({:shutdown, :finished}, state) do
+    IO.inspect(state)
+    Horde.Registry.put_meta(MyApp.DistributedRegistry, state.name, nil)
+    {:noreply, state}
   end
 
   def maybe_spawn(account_id) do
@@ -121,12 +102,9 @@ defmodule KeyValCluster.Account do
   end
 
   def add_auction(account_id, auction_id) do
-    DynamicSupervisor.start_child(
-      via_tuple_auction(account_id),
-      {KeyValCluster.Account.Auction, auction_id}
-    )
+    IO.inspect(auction_id)
 
-    # GenServer.cast(via_tuple(account_id), {:add_auction, account_id, auction_id})
+    GenServer.cast(via_tuple(account_id), {:add_auction, account_id, auction_id})
   end
 
   def handle_cast({:update, account_id, new_value}, value) do
@@ -138,38 +116,15 @@ defmodule KeyValCluster.Account do
     {:reply, value, value}
   end
 
-  # def handle_cast({:add_auction, account_id, auction_id}, value) do
-  #   Horde.DynamicSupervisor.start_child(
-  #     # {KeyValCluster.Account.AuctionSupervisor, account_id},
-  #     via_tuple_auction_supervisor(account_id),
-  #     {KeyValCluster.Account.Auction, account_id, auction_id}
-  #   )
+  def handle_cast({:add_auction, account_id, auction_id}, value) do
+    DynamicSupervisor.start_child(
+      via_tuple_auction(account_id),
+      {KeyValCluster.Account.Auction, auction_id}
+    )
 
-  #   {:reply, {account_id, auction_id}}
-  # end
+    {:noreply, account_id}
+  end
 end
-
-# defmodule KeyValCluster.Account.AuctionSupervisor do
-#   use Horde.DynamicSupervisor
-
-#   def start_link(account_id) do
-#     Horde.DynamicSupervisor.start_link(__MODULE__, account_id, name: via_tuple(account_id))
-#   end
-
-#   def via_tuple(account_id) do
-#     {
-#       :via,
-#       Horde.Registry,
-#       {KeyValCluster.Registry, {KeyValCluster.Account.AuctionSupervisor, account_id}}
-#     }
-#   end
-
-#   def init(init_arg) do
-#     [strategy: :one_for_one]
-#     |> Keyword.merge(init_arg)
-#     |> Horde.DynamicSupervisor.init()
-#   end
-# end
 
 defmodule KeyValCluster.Account.Auction do
   use GenServer
