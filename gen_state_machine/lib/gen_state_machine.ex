@@ -4,7 +4,7 @@ defmodule Game do
   @behaviour :gen_statem
 
   @countdown_duration 5_000
-  @game_timeout 60_000
+  @game_timeout 600_000
   @round_timeout 20_000
 
   def start_link do
@@ -59,7 +59,6 @@ defmodule Game do
 
   def handle_event({:call, from}, {:mark_ready, player}, :setup, data) do
     data = mark_player_ready(data, player)
-    IO.inspect(data)
 
     if both_players_ready?(data) do
       {:next_state, :countdown, data,
