@@ -7,8 +7,8 @@ defmodule Game do
   @game_timeout 600_000
   @round_timeout 20_000
 
-  def start_link do
-    :gen_statem.start_link(__MODULE__, [], [])
+  def start_link(id) do
+    :gen_statem.start_link(__MODULE__, id, [])
   end
 
   def place_ship(pid, player, position) do
@@ -23,7 +23,9 @@ defmodule Game do
     :gen_statem.call(pid, {:shoot, %{player: player, position: position}})
   end
 
-  def init(_) do
+  def init(id) do
+    IO.inspect(id)
+
     initial_player_state = %{
       ships: MapSet.new(),
       ready?: false

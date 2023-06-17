@@ -66,7 +66,7 @@ defmodule KeyValCluster.Account do
       strategy: :rest_for_one
     )
 
-    data = KeyValCluster.DB.fetch(:account, account_id)
+    # data = KeyValCluster.DB.fetch(:account, account_id)
     {:ok, data || nil}
   end
 
